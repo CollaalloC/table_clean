@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "../../../IsaacLab"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.tpp": "cpp",
+			"*.kit": "toml",
+			"*.rst": "restructuredtext"
+		},
+		"python.languageServer": "Pylance"
+	}
+}
