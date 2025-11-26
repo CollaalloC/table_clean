@@ -35,9 +35,9 @@ class FrankaTableCleanIKEnvCfg(LiftEnvCfg):
 
         # 1. 机器人：使用 High PD 配置，这对于 IK 跟踪非常重要
         self.scene.robot = FRANKA_PANDA_HIGH_PD_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-        # 调整机器人位置到桌边 (假设桌子中心在0,0，半径约50-60)
-        self.scene.robot.init_state.pos = (0.0, -65.0, 45.0) 
-        # 旋转机器人使其面向桌子中心 (绕Z轴90度: w=0.707, z=0.707)
+        # 调整机器人位置到桌面上 (假设桌子表面在 Z=45.0)
+        # 机器人放在 (0, -0.6) 处，面向 +Y 方向
+        self.scene.robot.init_state.pos = (0.0, -0.6, 45.0) 
         self.scene.robot.init_state.rot = (0.707, 0.0, 0.0, 0.707)
 
         # --------------------------------------------------------
@@ -88,13 +88,14 @@ class FrankaTableCleanIKEnvCfg(LiftEnvCfg):
                 usd_path=os.path.join(ASSETS_DATA_DIR, "basket", "basket.usd"),
                 scale=(150.0, 150.0, 150.0),
             ),
-            # 篮子放在桌子对面
-            init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 25.0, 45.0)),
+            # 篮子放在机器人前方可达区域
+            init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.3, 45.0)),
         )
 
         self.scene.object = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/Object",
-            init_state=RigidObjectCfg.InitialStateCfg(pos=[0.0, -20.0, 55.0], rot=[1, 0, 0, 0]),
+            # 物体放在机器人和篮子之间
+            init_state=RigidObjectCfg.InitialStateCfg(pos=[0.0, -0.2, 45.05], rot=[1, 0, 0, 0]),
             spawn=MultiAssetSpawnerCfg(
                 assets=[
                     UsdFileCfg(

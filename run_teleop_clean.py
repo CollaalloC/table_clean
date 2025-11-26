@@ -25,7 +25,9 @@ import logging
 from collections.abc import Callable
 
 import isaaclab.envs
-from isaaclab.devices import Se3Gamepad, Se3GamepadCfg, Se3Keyboard, Se3KeyboardCfg, Se3SpaceMouse, Se3SpaceMouseCfg
+#from isaaclab.devices.gamepad import Se3Gamepad, Se3GamepadCfg
+from isaaclab.devices.keyboard import Se3Keyboard, Se3KeyboardCfg
+#from isaaclab.devices.spacemouse import Se3SpaceMouse, Se3SpaceMouseCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 
 # 导入我们的环境配置
