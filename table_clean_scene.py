@@ -118,7 +118,7 @@ def design_scene_and_spawn():
     # 计算篮子位置：放在桌面的右侧 (Y轴正方向 1/4 处)
     # 假设桌子中心在 (0,0)
     basket_y_offset = real_depth * 0.25 
-    basket_pos = (0.0, basket_y_offset, real_surface_z)
+    basket_pos = (0.0, basket_y_offset, 45.0)
 
     if os.path.exists(basket_path):
         print(f"[INFO] Spawning Basket at offset Y={basket_y_offset:.2f}")
