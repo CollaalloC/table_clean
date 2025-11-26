@@ -1,0 +1,32 @@
+[7.983s] Simulation App Starting
+2025-11-26 13:18:16 [8,328ms] [Warning] [rtx.neuraylib.plugin] [IRAY:RENDER]   1.1   IRAY   rend warn : CUDA device 0 (NVIDIA L20): ECC is enabled, this will reduce rendering performance (it is strongly recommended to disable ECC with iray)
+2025-11-26 13:18:16 [8,335ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 7374781440
+2025-11-26 13:18:16 [8,335ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid false, within: false
+2025-11-26 13:18:16 [8,335ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : decrement: 167690, decrement size: 7301033856
+2025-11-26 13:18:16 [8,335ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : New limit 9748724 (slope: 439, intercept: 13179904)
+2025-11-26 13:18:16 [8,335ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit buffer size 4287352704
+2025-11-26 13:18:16 [8,335ms] [Warning] [rtx.scenedb.plugin] SceneDbContext : TLAS limit : valid true, within: true
+[8.404s] app ready
+2025-11-26 13:18:16 [8,516ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
+[12.077s] Simulation App Startup Complete
+Traceback (most recent call last):
+  File "/home/user/IsaacLab/table_clean/run_teleop_clean.py", line 28, in <module>
+    from isaaclab.devices import Se3Gamepad, Se3GamepadCfg, Se3Keyboard, Se3KeyboardCfg, Se3SpaceMouse, Se3SpaceMouseCfg
+ImportError: cannot import name 'Se3GamepadCfg' from 'isaaclab.devices' (/home/user/IsaacLab/source/isaaclab/isaaclab/devices/__init__.py)
+2025-11-26 13:18:19 [12,096ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,096ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,096ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,096ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Annotators' for removal
+2025-11-26 13:18:19 [12,097ms] [Warning] [omni.graph.core.plugin] Could not find category 'Replicator:Core' for removal
+2025-11-26 13:18:19 [12,099ms] [Warning] [omni.graph.core.plugin] Could not find category 'animation' for removal
+2025-11-26 13:18:19 [12,105ms] [Warning] [omni.fabric.plugin] gFabricState->gUsdStageToSimStageWithHistoryMap had 1 outstanding SimStageWithHistory(s) at shutdown
+2025-11-26 13:18:19 [12,105ms] [Warning] [carb.audio.context] 1 contexts were leaked
+2025-11-26 13:18:19 [12,162ms] [Warning] [carb] Recursive unloadAllPlugins() detected!
