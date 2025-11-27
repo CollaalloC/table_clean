@@ -2,7 +2,7 @@
 # All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
-
+import os
 import math
 
 import isaaclab.sim as sim_utils
@@ -19,42 +19,104 @@ from isaaclab.utils import configclass
 
 from . import mdp
 
+from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
+from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
+from isaaclab.sim.spawners.multi_asset.multi_asset_spawner_cfg import MultiAssetSpawnerCfg
+from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
+from isaaclab.sensors import FrameTransformerCfg
+from isaaclab.sensors.frame_transformer.frame_transformer_cfg import OffsetCfg
+from isaaclab.markers.config import FRAME_MARKER_CFG
 ##
 # Pre-defined configs
 ##
-
+# 引入官方 LiftEnvCfg 作为基类，复用其奖励和观测逻辑
+from isaaclab_tasks.manager_based.manipulation.lift.lift_env_cfg import LiftEnvCfg
 from isaaclab_assets.robots.cartpole import CARTPOLE_CFG  # isort:skip
+from isaaclab_tasks.manager_based.manipulation.lift.config.franka.ik_rel_env_cfg import FrankaCubeLiftEnvCfg as OfficialFrankaIKCfg
 
-
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+TABLE_CLEAN_PROJECT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../../../../../.."))
+ASSETS_DIR = os.path.join(TABLE_CLEAN_PROJECT_DIR, "assets")
+OBJECT_NAMES = ["alphabet_soup", "butter", "cream_cheese", "ketchup", "milk", "orange_juice", "tomato_sauce"]
+TABLE_HEIGHT = 45.0
 ##
 # Scene definition
 ##
 
 
 @configclass
-class TableCleanSceneCfg(InteractiveSceneCfg):
-    """Configuration for a cart-pole scene."""
+class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
+    """
+    继承官方的 Franka IK 环境配置。
+    我们直接获得了：
+    1. Franka High PD 机器人配置
+    2. IK Relative 动作空间 (适配 Teleop)
+    3. 末端传感器配置 (EE Frame)
+    """
+    def __post_init__(self):
+        # 1. 运行父类初始化 (加载了官方的 Robot, Actions, Sensors)
+        super().__post_init__()
 
-    # ground plane
-    ground = AssetBaseCfg(
-        prim_path="/World/ground",
-        spawn=sim_utils.GroundPlaneCfg(size=(100.0, 100.0)),
-    )
+        # =====================================================
+        # 2. 修改机器人位置 (防碰撞)
+        # =====================================================
+        # [修正 2] 将机器人移到 y = -20.0，远离巨大的篮子 (y=8.0)
+        self.scene.robot.init_state.pos = (0.0, -20.0, TABLE_HEIGHT)
+        self.scene.robot.init_state.rot = (1.0, 0.0, 0.0, 0.0)
 
-    # robot
-    robot: ArticulationCfg = CARTPOLE_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        # =====================================================
+        # 3. 覆盖场景物体
+        # =====================================================
+        
+        # [A] 覆盖 Table (官方默认是小桌子，我们换成大桌子)
+        self.scene.table = AssetBaseCfg(
+            prim_path="{ENV_REGEX_NS}/Table",
+            spawn=UsdFileCfg(
+                usd_path=f"{ASSETS_DIR}/living_room_table/living_room_table.usd",
+                scale=(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE),
+            ),
+            init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, 0.0)),
+        )
 
-    # lights
-    dome_light = AssetBaseCfg(
-        prim_path="/World/DomeLight",
-        spawn=sim_utils.DomeLightCfg(color=(0.9, 0.9, 0.9), intensity=500.0),
-    )
+        # [B] 覆盖 Object (换成你的随机杂货)
+        self.scene.object = RigidObjectCfg(
+            prim_path="{ENV_REGEX_NS}/Object",
+            init_state=RigidObjectCfg.InitialStateCfg(
+                # 生成在机器人前方一点
+                pos=[0.0, -15.0, TABLE_HEIGHT + 0.2], 
+                rot=[1, 0, 0, 0]
+            ),
+            spawn=MultiAssetSpawnerCfg(
+                assets=[
+                    UsdFileCfg(
+                        usd_path=f"{ASSETS_DIR}/{name}/{name}.usd",
+                        scale=(1.0, 1.0, 1.0),
+                        rigid_props=RigidBodyPropertiesCfg(
+                            disable_gravity=False, linear_damping=1.0, angular_damping=1.0
+                        ),
+                        mass_props=RigidBodyPropertiesCfg.MassPropertiesCfg(mass=0.5), 
+                    ) for name in OBJECT_NAMES
+                ],
+                random_choice=True,
+            ),
+        )
 
+        # [C] 新增 Basket (官方 Lift 任务没有篮子)
+        self.scene.basket = AssetBaseCfg(
+            prim_path="{ENV_REGEX_NS}/Basket",
+            spawn=UsdFileCfg(
+                usd_path=f"{ASSETS_DIR}/basket/basket.usd",
+                scale=(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE),
+            ),
+            init_state=AssetBaseCfg.InitialStateCfg(
+                pos=(0.0, 8.0, TABLE_HEIGHT),
+            ),
+        )
 
 ##
 # MDP settings
 ##
-
+'''
 
 @configclass
 class ActionsCfg:
@@ -178,3 +240,5 @@ class TableCleanEnvCfg(ManagerBasedRLEnvCfg):
         # simulation settings
         self.sim.dt = 1 / 120
         self.sim.render_interval = self.decimation
+
+'''

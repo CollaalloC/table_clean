@@ -29,7 +29,7 @@ from isaaclab.devices import Se3Gamepad, Se3Keyboard, Se3SpaceMouse
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 
 # 导入我们的环境配置
-from table_clean_env_ik import FrankaTableCleanIKEnvCfg
+from old.table_clean_task.table_clean_env_ik import FrankaTableCleanIKEnvCfg
 
 # 设置日志
 logger = logging.getLogger(__name__)
