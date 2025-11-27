@@ -17,7 +17,8 @@ from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
 
-from . import mdp
+#from . import mdp
+from isaaclab_tasks.manager_based.manipulation.lift import mdp
 
 from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
@@ -39,6 +40,7 @@ TABLE_CLEAN_PROJECT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../../..
 ASSETS_DIR = os.path.join(TABLE_CLEAN_PROJECT_DIR, "assets")
 OBJECT_NAMES = ["alphabet_soup", "butter", "cream_cheese", "ketchup", "milk", "orange_juice", "tomato_sauce"]
 TABLE_HEIGHT = 45.0
+SCENE_SCALE = 150.0
 ##
 # Scene definition
 ##
@@ -78,12 +80,12 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
             init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, 0.0)),
         )
 
-        # [B] 覆盖 Object (换成你的随机杂货)
+        # [C] 杂货 (初始定义)
+        # 注意：这里的 init_state 只是第一帧的位置，reset 后会被下面的 events 覆盖
         self.scene.object = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/Object",
             init_state=RigidObjectCfg.InitialStateCfg(
-                # 生成在机器人前方一点
-                pos=[0.0, -15.0, TABLE_HEIGHT + 0.2], 
+                pos=[0.0, -10.0, TABLE_HEIGHT + 0.5], 
                 rot=[1, 0, 0, 0]
             ),
             spawn=MultiAssetSpawnerCfg(
@@ -97,8 +99,33 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
                         mass_props=RigidBodyPropertiesCfg.MassPropertiesCfg(mass=0.5), 
                     ) for name in OBJECT_NAMES
                 ],
-                random_choice=True,
+                random_choice=True, # 每次重置随机换一个物品模型
             ),
+        )
+
+        # =====================================================
+        # 4. [新增] 随机化事件 (Events)
+        # =====================================================
+        # 覆盖官方的 reset_object_position，使用我们自定义的范围
+        self.events.reset_object_position = EventTerm(
+            func=mdp.reset_root_state_uniform, # 使用均匀分布随机重置位置
+            mode="reset", # 仅在环境重置时触发
+            params={
+                "asset_cfg": SceneEntityCfg("object"),
+                "pose_range": {
+                    # X轴: 左右各5米范围
+                    "x": (-5.0, 5.0), 
+                    
+                    # Y轴: [-15, -2]
+                    # 解释: 机器人(-20) < 物品 < 篮子(8)
+                    # 这样物品就在机器人前方，且不会掉进篮子里
+                    "y": (-15.0, -2.0), 
+                    
+                    # Z轴: 在桌面上方 0.5~1.0米处生成，自然掉落
+                    "z": (TABLE_HEIGHT + 0.5, TABLE_HEIGHT + 1.0)
+                },
+                "velocity_range": {}, # 初速度为0
+            },
         )
 
         # [C] 新增 Basket (官方 Lift 任务没有篮子)
