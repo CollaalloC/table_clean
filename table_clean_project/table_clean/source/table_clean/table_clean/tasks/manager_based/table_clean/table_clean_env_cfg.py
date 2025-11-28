@@ -89,7 +89,7 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
                 rot=[1, 0, 0, 0]
             ),
             spawn=MultiAssetSpawnerCfg(
-                assets=[
+                assets_cfg=[
                     UsdFileCfg(
                         usd_path=f"{ASSETS_DIR}/{name}/{name}.usd",
                         scale=(1.0, 1.0, 1.0),
