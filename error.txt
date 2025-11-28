@@ -1,6 +1,7 @@
-[9.177s] app ready
-2025-11-28 13:13:43 [9,227ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
-[13.140s] Simulation App Startup Complete
+[9.150s] app ready
+2025-11-28 13:27:14 [9,187ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
+[12.772s] Simulation App Startup Complete
+[INFO]: Parsing configuration from: table_clean.tasks.manager_based.table_clean.table_clean_env_cfg:TableCleanIKRelEnvCfg
 Traceback (most recent call last):
   File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 155, in <module>
     main()
@@ -8,16 +9,13 @@ Traceback (most recent call last):
     env_cfg = parse_env_cfg(
   File "/home/user/IsaacLab/source/isaaclab_tasks/isaaclab_tasks/utils/parse_cfg.py", line 120, in parse_env_cfg
     cfg = load_cfg_from_registry(task_name, "env_cfg_entry_point")
-  File "/home/user/IsaacLab/source/isaaclab_tasks/isaaclab_tasks/utils/parse_cfg.py", line 86, in load_cfg_from_registry
-    mod = importlib.import_module(mod_name)
-  File "/home/user/IsaacLab/_isaac_sim/kit/python/lib/python3.10/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/source/table_clean/table_clean/tasks/manager_based/table_clean/table_clean_env_cfg.py", line 25, in <module>
-    from isaaclab.sim.spawners.multi_asset.multi_asset_spawner_cfg import MultiAssetSpawnerCfg
-ModuleNotFoundError: No module named 'isaaclab.sim.spawners.multi_asset'
+  File "/home/user/IsaacLab/source/isaaclab_tasks/isaaclab_tasks/utils/parse_cfg.py", line 93, in load_cfg_from_registry
+    cfg = cfg_cls()
+  File "<string>", line 22, in __init__
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/utils/configclass.py", line 408, in _combined
+    f1(*args, **kwargs)
+  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/source/table_clean/table_clean/tasks/manager_based/table_clean/table_clean_env_cfg.py", line 92, in __post_init__
+    assets=[
+  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/source/table_clean/table_clean/tasks/manager_based/table_clean/table_clean_env_cfg.py", line 99, in <listcomp>
+    mass_props=RigidBodyPropertiesCfg.MassPropertiesCfg(mass=0.5), 
+AttributeError: type object 'RigidBodyPropertiesCfg' has no attribute 'MassPropertiesCfg'
