@@ -12,7 +12,7 @@ import os
 
 from isaaclab.app import AppLauncher
 
-import table_clean_project
+import table_clean
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Keyboard teleoperation for Isaac Lab environments.")
 parser.add_argument(
