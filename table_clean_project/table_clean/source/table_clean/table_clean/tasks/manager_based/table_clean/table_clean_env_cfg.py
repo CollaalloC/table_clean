@@ -22,7 +22,7 @@ from isaaclab_tasks.manager_based.manipulation.lift import mdp
 
 from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
-from isaaclab.sim.spawners.multi_asset.multi_asset_spawner_cfg import MultiAssetSpawnerCfg
+from isaaclab.sim.spawners.wrappers import MultiAssetSpawnerCfg
 from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
 from isaaclab.sensors import FrameTransformerCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import OffsetCfg
