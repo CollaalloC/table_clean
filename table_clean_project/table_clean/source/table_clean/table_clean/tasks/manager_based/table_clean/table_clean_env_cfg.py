@@ -23,7 +23,7 @@ from isaaclab_tasks.manager_based.manipulation.lift import mdp
 from isaaclab.assets import AssetBaseCfg, RigidObjectCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.sim.spawners.wrappers import MultiAssetSpawnerCfg
-from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
+from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg, MassPropertiesCfg
 from isaaclab.sensors import FrameTransformerCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import OffsetCfg
 from isaaclab.markers.config import FRAME_MARKER_CFG
@@ -96,7 +96,7 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
                         rigid_props=RigidBodyPropertiesCfg(
                             disable_gravity=False, linear_damping=1.0, angular_damping=1.0
                         ),
-                        mass_props=RigidBodyPropertiesCfg.MassPropertiesCfg(mass=0.5), 
+                        mass_props=MassPropertiesCfg(mass=0.5), 
                     ) for name in OBJECT_NAMES
                 ],
                 random_choice=True, # 每次重置随机换一个物品模型
