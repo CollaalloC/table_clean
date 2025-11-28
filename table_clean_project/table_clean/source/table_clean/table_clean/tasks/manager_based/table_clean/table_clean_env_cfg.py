@@ -39,8 +39,12 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 TABLE_CLEAN_PROJECT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, "../../../../../../.."))
 ASSETS_DIR = os.path.join(TABLE_CLEAN_PROJECT_DIR, "assets")
 OBJECT_NAMES = ["alphabet_soup", "butter", "cream_cheese", "ketchup", "milk", "orange_juice", "tomato_sauce"]
-TABLE_HEIGHT = 45.0
+# 场景缩放倍数
 SCENE_SCALE = 150.0
+# 桌子高度
+TABLE_HEIGHT = 45.0
+# 机器人末端原始偏移量 (米)
+ROBOT_EE_OFFSET_ORIGINAL = 0.1034
 ##
 # Scene definition
 ##
@@ -60,16 +64,34 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
         super().__post_init__()
 
         # =====================================================
-        # 2. 修改机器人位置 (防碰撞)
-        # =====================================================
-        # [修正 2] 将机器人移到 y = -20.0，远离巨大的篮子 (y=8.0)
-        self.scene.robot.init_state.pos = (0.0, -20.0, TABLE_HEIGHT)
-        self.scene.robot.init_state.rot = (1.0, 0.0, 0.0, 0.0)
-
-        # =====================================================
-        # 3. 覆盖场景物体
+        # 2. 修改机器人配置 (位置 & 尺寸)
         # =====================================================
         
+        # [A] 修改位置：移到 Y=-20 (远离篮子)，高度 45m
+        self.scene.robot.init_state.pos = (0.0, -20.0, TABLE_HEIGHT)
+        self.scene.robot.init_state.rot = (1.0, 0.0, 0.0, 0.0)
+        
+        # [B] 修改尺寸：放大 150 倍
+        # 注意：spawn 是一个 UsdFileCfg 对象，我们可以直接修改它的 scale 属性
+        self.scene.robot.spawn.scale = (SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
+
+        # =====================================================
+        # 3. 修正 IK 控制器与传感器的偏移量 (适配放大)
+        # =====================================================
+        # 因为机器人变大了 150 倍，"手掌"到"指尖"的距离也变大了 150 倍
+        # 0.1034m * 150 = 15.51m
+        scaled_offset = ROBOT_EE_OFFSET_ORIGINAL * SCENE_SCALE
+
+        # [A] 修正 IK 动作空间的 Body Offset
+        self.actions.arm_action.body_offset.pos = [0.0, 0.0, scaled_offset]
+
+        # [B] 修正末端传感器 (FrameTransformer) 的 Offset
+        # 这里的 target_frames[0] 就是 end_effector
+        self.scene.ee_frame.target_frames[0].offset.pos = [0.0, 0.0, scaled_offset]
+
+        # =====================================================
+        # 4. 覆盖场景物体
+        # =====================================================
         # [A] 覆盖 Table (官方默认是小桌子，我们换成大桌子)
         self.scene.table = AssetBaseCfg(
             prim_path="{ENV_REGEX_NS}/Table",
