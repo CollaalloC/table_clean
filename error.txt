@@ -1,6 +1,6 @@
-[9.150s] app ready
-2025-11-28 13:27:14 [9,187ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
-[12.772s] Simulation App Startup Complete
+[8.454s] app ready
+2025-11-28 13:32:22 [8,474ms] [Warning] [omni.usd-abi.plugin] No setting was found for '/rtx-defaults-transient/meshlights/forceDisable'
+[12.239s] Simulation App Startup Complete
 [INFO]: Parsing configuration from: table_clean.tasks.manager_based.table_clean.table_clean_env_cfg:TableCleanIKRelEnvCfg
 Traceback (most recent call last):
   File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 155, in <module>
@@ -14,8 +14,6 @@ Traceback (most recent call last):
   File "<string>", line 22, in __init__
   File "/home/user/IsaacLab/source/isaaclab/isaaclab/utils/configclass.py", line 408, in _combined
     f1(*args, **kwargs)
-  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/source/table_clean/table_clean/tasks/manager_based/table_clean/table_clean_env_cfg.py", line 92, in __post_init__
-    assets=[
-  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/source/table_clean/table_clean/tasks/manager_based/table_clean/table_clean_env_cfg.py", line 99, in <listcomp>
-    mass_props=RigidBodyPropertiesCfg.MassPropertiesCfg(mass=0.5), 
-AttributeError: type object 'RigidBodyPropertiesCfg' has no attribute 'MassPropertiesCfg'
+  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/source/table_clean/table_clean/tasks/manager_based/table_clean/table_clean_env_cfg.py", line 91, in __post_init__
+    spawn=MultiAssetSpawnerCfg(
+TypeError: MultiAssetSpawnerCfg.__init__() got an unexpected keyword argument 'assets'
