@@ -12,7 +12,7 @@ import os
 
 from isaaclab.app import AppLauncher
 
-import table_clean
+
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Keyboard teleoperation for Isaac Lab environments.")
 parser.add_argument(
@@ -36,13 +36,14 @@ simulation_app = app_launcher.app
 
 """Rest everything follows."""
 
+import table_clean
 
 import gymnasium as gym
 import torch
 
 import omni.log
 
-from isaaclab.devices import Se3Gamepad, Se3HandTracking, Se3Keyboard, Se3SpaceMouse
+from isaaclab.devices import Se3Gamepad, Se3Keyboard, Se3SpaceMouse
 from isaaclab.envs import ViewerCfg
 from isaaclab.envs.ui import ViewportCameraController
 from isaaclab.managers import TerminationTermCfg as DoneTerm
