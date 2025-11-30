@@ -53,47 +53,34 @@ ROBOT_EE_OFFSET_ORIGINAL = 0.1034
 @configclass
 class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
     """
-    自定义环境配置：Table Clean (IK Control)
+    自定义环境配置：Table Clean (IK Control, 双物品)
     """
     def __post_init__(self):
         # 1. 运行父类初始化
         super().__post_init__()
 
         # =====================================================
-        # 2. 机器人设置 (位置 & 尺寸 & 动力学修正)
+        # 2. 机器人设置
         # =====================================================
-        
-        # [A] 位置：远离篮子
         self.scene.robot.init_state.pos = (0.0, -20.0, TABLE_HEIGHT)
         self.scene.robot.init_state.rot = (1.0, 0.0, 0.0, 0.0)
-        
-        # [B] 尺寸：放大 150 倍
         self.scene.robot.spawn.scale = (SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
-
-        # [C] 动力学修正 (重要！)
-        # 放大150倍后，机器人太重了，默认电机推不动。
-        # 我们强制关闭重力，让它像在太空中一样，这样IK才能控制得动。
         self.scene.robot.spawn.rigid_props.disable_gravity = True 
 
         # =====================================================
-        # 3. 修正 IK 控制器与传感器 (适配放大)
+        # 3. 修正 IK 控制器与传感器
         # =====================================================
         scaled_offset = ROBOT_EE_OFFSET_ORIGINAL * SCENE_SCALE
-
-        # [A] 修正动作空间 (Actions)
         self.actions.arm_action.body_offset.pos = [0.0, 0.0, scaled_offset]
-        
-        # [关键修改] 放大动作灵敏度！
-        # 以前动一下是 0.5米，现在需要是 0.5 * 150 = 75米，否则看不出在动
+        # 放大动作灵敏度，确保键盘控制能动
         self.actions.arm_action.scale = 0.5 * SCENE_SCALE
-
-        # [B] 修正传感器
         self.scene.ee_frame.target_frames[0].offset.pos = [0.0, 0.0, scaled_offset]
 
         # =====================================================
-        # 4. 覆盖场景物体 (Table, Basket)
+        # 4. 覆盖场景物体
         # =====================================================
         
+        # [A] 桌子
         self.scene.table = AssetBaseCfg(
             prim_path="{ENV_REGEX_NS}/Table",
             spawn=UsdFileCfg(
@@ -103,21 +90,7 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
             init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, 0.0)),
         )
 
-        self.scene.basket = AssetBaseCfg(
-            prim_path="{ENV_REGEX_NS}/Basket",
-            spawn=UsdFileCfg(
-                usd_path=f"{ASSETS_DIR}/basket/basket.usd",
-                scale=(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE),
-            ),
-            init_state=AssetBaseCfg.InitialStateCfg(
-                pos=(0.0, 8.0, TABLE_HEIGHT),
-            ),
-        )
-
-        # =====================================================
-        # 5. 生成两个随机物品 (Object A & Object B)
-        # =====================================================
-        # 定义通用的生成器配置
+        # [B] 定义通用的杂货生成器
         common_spawner = MultiAssetSpawnerCfg(
             assets_cfg=[
                 UsdFileCfg(
@@ -132,33 +105,43 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
             random_choice=True, # 随机选一个
         )
 
-        # 物品 A
-        self.scene.object_a = RigidObjectCfg(
-            prim_path="{ENV_REGEX_NS}/Object_A",
+        # [关键策略]
+        # 1. 这里的名字叫 "object"，直接覆盖父类的定义。
+        # 这样父类所有的奖励函数(reaching_object等)都会自动追踪这个物体，不会报错。
+        self.scene.object = RigidObjectCfg(
+            prim_path="{ENV_REGEX_NS}/Object",
             init_state=RigidObjectCfg.InitialStateCfg(pos=[0.0, -10.0, TABLE_HEIGHT + 0.5]),
-            spawn=common_spawner, # 复用配置
+            spawn=common_spawner,
         )
 
-        # 物品 B
-        self.scene.object_b = RigidObjectCfg(
-            prim_path="{ENV_REGEX_NS}/Object_B",
+        # 2. 这是第二个物体，命名为 "object_2"
+        self.scene.object_2 = RigidObjectCfg(
+            prim_path="{ENV_REGEX_NS}/Object_2",
             init_state=RigidObjectCfg.InitialStateCfg(pos=[5.0, -10.0, TABLE_HEIGHT + 0.5]),
-            spawn=common_spawner, # 复用配置
+            spawn=common_spawner,
         )
 
-        # [重要] 移除原本的 self.scene.object，防止报错或混淆
-        if hasattr(self.scene, "object"):
-            del self.scene.object
+        # [C] 篮子
+        self.scene.basket = AssetBaseCfg(
+            prim_path="{ENV_REGEX_NS}/Basket",
+            spawn=UsdFileCfg(
+                usd_path=f"{ASSETS_DIR}/basket/basket.usd",
+                scale=(SCENE_SCALE, SCENE_SCALE, SCENE_SCALE),
+            ),
+            init_state=AssetBaseCfg.InitialStateCfg(
+                pos=(0.0, 8.0, TABLE_HEIGHT),
+            ),
+        )
 
         # =====================================================
-        # 6. 随机化事件 (适配双物品)
+        # 5. 随机化事件
         # =====================================================
         self.events.reset_object_position = EventTerm(
             func=mdp.reset_root_state_uniform,
             mode="reset",
             params={
-                # 使用正则匹配 object_a 和 object_b
-                "asset_cfg": SceneEntityCfg("object_.*"), 
+                # 使用正则 "object.*" 同时控制 object 和 object_2
+                "asset_cfg": SceneEntityCfg("object.*"), 
                 "pose_range": {
                     "x": (-5.0, 5.0), 
                     "y": (-15.0, -2.0),
@@ -166,6 +149,16 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
                 },
                 "velocity_range": {},
             },
+        )
+
+        # =====================================================
+        # 6. 补充观测
+        # =====================================================
+        # 父类已经有了 object 的观测。
+        # 我们只需要额外把 object_2 的位置加进去即可。
+        self.observations.policy.object_2_position = ObsTerm(
+            func=mdp.object_position_in_robot_root_frame,
+            params={"object_cfg": SceneEntityCfg("object_2")}
         )
 
 ##
