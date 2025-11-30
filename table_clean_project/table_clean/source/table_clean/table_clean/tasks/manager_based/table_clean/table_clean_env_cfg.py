@@ -60,22 +60,33 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
         super().__post_init__()
 
         # =====================================================
-        # 2. 机器人设置
+        # 2. [核心修复] 机器人配置 (尺寸、位置、重力)
         # =====================================================
+        
+        # [A] 缩放：机器人也必须放大 150 倍
+        self.scene.robot.spawn.scale = (SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
+        
+        # [B] 位置：移到 Y=-20 (远离篮子)，高度 45m
         self.scene.robot.init_state.pos = (0.0, -20.0, TABLE_HEIGHT)
         self.scene.robot.init_state.rot = (1.0, 0.0, 0.0, 0.0)
-        self.scene.robot.spawn.scale = (SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
+
+        # [C] 物理：禁用重力 (防止巨型机器人自重过大导致瘫痪)
         self.scene.robot.spawn.rigid_props.disable_gravity = True 
 
         # =====================================================
-        # 3. 修正 IK 控制器与传感器
+        # 3. [核心修复] 修正 IK 控制器与传感器 (适配放大)
         # =====================================================
+        # 计算放大后的偏移量 (0.1034 * 150 = 15.51米)
         scaled_offset = ROBOT_EE_OFFSET_ORIGINAL * SCENE_SCALE
-        self.actions.arm_action.body_offset.pos = [0.0, 0.0, scaled_offset]
-        # 放大动作灵敏度，确保键盘控制能动
-        self.actions.arm_action.scale = 0.5 * SCENE_SCALE
-        self.scene.ee_frame.target_frames[0].offset.pos = [0.0, 0.0, scaled_offset]
 
+        # [A] 动作灵敏度：放大 150 倍，否则按键盘像没反应一样
+        self.actions.arm_action.scale = 0.5 * SCENE_SCALE
+        
+        # [B] IK 目标点偏移：告诉解算器“手”变长了
+        self.actions.arm_action.body_offset.pos = [0.0, 0.0, scaled_offset]
+
+        # [C] 传感器偏移：让观测数据也是正确的
+        self.scene.ee_frame.target_frames[0].offset.pos = [0.0, 0.0, scaled_offset]
         # =====================================================
         # 4. 覆盖场景物体
         # =====================================================
