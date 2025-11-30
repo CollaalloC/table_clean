@@ -1,4 +1,4 @@
-[INFO]: Time taken for simulation start : 2.982756 seconds
+INFO]: Time taken for simulation start : 3.198994 seconds
 [INFO] Command Manager:  <CommandManager> contains 1 active terms.
 +------------------------------------------+
 |           Active Command Terms           |
@@ -36,61 +36,29 @@
 |   1   | gripper_action |         1 |
 +-------+----------------+-----------+
 
-[INFO] Observation Manager: <ObservationManager> contains 1 groups.
-+-----------------------------------------------------------+
-| Active Observation Terms in Group: 'policy' (shape: (35,)) |
-+----------+-------------------------------------+----------+
-|  Index   | Name                                |  Shape   |
-+----------+-------------------------------------+----------+
-|    0     | joint_pos                           |   (9,)   |
-|    1     | joint_vel                           |   (9,)   |
-|    2     | object_position                     |   (3,)   |
-|    3     | target_object_position              |   (7,)   |
-|    4     | actions                             |   (7,)   |
-+----------+-------------------------------------+----------+
-
-[INFO] Termination Manager:  <TerminationManager> contains 1 active terms.
-+------------------------------------+
-|      Active Termination Terms      |
-+-------+-----------------+----------+
-| Index | Name            | Time Out |
-+-------+-----------------+----------+
-|   0   | object_dropping |  False   |
-+-------+-----------------+----------+
-
-[INFO] Reward Manager:  <RewardManager> contains 6 active terms.
-+-----------------------------------------------------+
-|                 Active Reward Terms                 |
-+-------+-----------------------------------+---------+
-| Index | Name                              |  Weight |
-+-------+-----------------------------------+---------+
-|   0   | reaching_object                   |     1.0 |
-|   1   | lifting_object                    |    15.0 |
-|   2   | object_goal_tracking              |    16.0 |
-|   3   | object_goal_tracking_fine_grained |     5.0 |
-|   4   | action_rate                       | -0.0001 |
-|   5   | joint_vel                         | -0.0001 |
-+-------+-----------------------------------+---------+
-
-[INFO] Curriculum Manager:  <CurriculumManager> contains 2 active terms.
-+--------------------------+
-| Active Curriculum Terms  |
-+---------+----------------+
-|  Index  | Name           |
-+---------+----------------+
-|    0    | action_rate    |
-|    1    | joint_vel      |
-+---------+----------------+
-
-Creating window for environment.
-[INFO]: Completed setting up the environment...
-Keyboard Controller for SE(3): Se3Keyboard
-	Keyboard name: Isaac Sim 4.5.0
-	----------------------------------------------
-	Toggle gripper (open/close): K
-	Move arm along x-axis: W/S
-	Move arm along y-axis: A/D
-	Move arm along z-axis: Q/E
-	Rotate arm along x-axis: Z/X
-	Rotate arm along y-axis: T/G
-	Rotate arm along z-axis: C/V
+Traceback (most recent call last):
+  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 155, in <module>
+    main()
+  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 85, in main
+    env = gym.make(args_cli.task, cfg=env_cfg).unwrapped
+  File "/home/user/isaacsim/exts/omni.isaac.ml_archive/pip_prebundle/gymnasium/envs/registration.py", line 802, in make
+    env = env_creator(**env_spec_kwargs)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 79, in __init__
+    super().__init__(cfg=cfg)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_env.py", line 163, in __init__
+    self.load_managers()
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 117, in load_managers
+    super().load_managers()
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_env.py", line 243, in load_managers
+    self.observation_manager = ObservationManager(self.cfg.observations, self)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/observation_manager.py", line 82, in __init__
+    super().__init__(cfg, env)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/manager_base.py", line 169, in __init__
+    self._prepare_terms()
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/observation_manager.py", line 465, in _prepare_terms
+    obs_dims = tuple(term_cfg.func(self._env, **term_cfg.params).shape)
+  File "/home/user/IsaacLab/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/mdp/observations.py", line 26, in object_position_in_robot_root_frame
+    object: RigidObject = env.scene[object_cfg.name]
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/scene/interactive_scene.py", line 618, in __getitem__
+    raise KeyError(f"Scene entity with key '{key}' not found. Available Entities: '{all_keys}'")
+KeyError: "Scene entity with key 'object' not found. Available Entities: '['terrain', 'robot', 'object_a', 'object_b', 'ee_frame', 'table', 'plane', 'light', 'basket']'"
