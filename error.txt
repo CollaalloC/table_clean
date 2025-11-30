@@ -1,4 +1,57 @@
-INFO]: Time taken for simulation start : 3.198994 seconds
+[11.787s] Simulation App Startup Complete
+[INFO]: Parsing configuration from: table_clean.tasks.manager_based.table_clean.table_clean_env_cfg:TableCleanIKRelEnvCfg
+2025-11-30 15:04:48 [11,801ms] [Warning] [isaaclab.envs.manager_based_env] Seed not set for the environment. The environment creation may not be deterministic.
+[11.960s] [ext: omni.physx.fabric-106.5.7] startup
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : None
+	Physics step-size     : 0.01
+	Rendering step-size   : 0.02
+	Environment step-size : 0.02
+2025-11-30 15:04:49 [13,584ms] [Warning] [isaaclab.sim.utils] Could not perform 'modify_mass_properties' on any prims under: '/World/Template/Asset_0000'. This might be because of the following reasons:
+	(1) The desired attribute does not exist on any of the prims.
+	(2) The desired attribute exists on an instanced prim.
+		Discovered list of instanced prim paths: []
+2025-11-30 15:04:50 [13,632ms] [Warning] [isaaclab.sim.utils] Could not perform 'modify_mass_properties' on any prims under: '/World/Template/Asset_0003'. This might be because of the following reasons:
+	(1) The desired attribute does not exist on any of the prims.
+	(2) The desired attribute exists on an instanced prim.
+		Discovered list of instanced prim paths: []
+2025-11-30 15:04:50 [14,008ms] [Warning] [isaaclab.sim.utils] Could not perform 'modify_mass_properties' on any prims under: '/World/Template/Asset_0000'. This might be because of the following reasons:
+	(1) The desired attribute does not exist on any of the prims.
+	(2) The desired attribute exists on an instanced prim.
+		Discovered list of instanced prim paths: []
+2025-11-30 15:04:50 [14,049ms] [Warning] [isaaclab.sim.utils] Could not perform 'modify_mass_properties' on any prims under: '/World/Template/Asset_0003'. This might be because of the following reasons:
+	(1) The desired attribute does not exist on any of the prims.
+	(2) The desired attribute exists on an instanced prim.
+		Discovered list of instanced prim paths: []
+2025-11-30 15:04:50 [14,116ms] [Warning] [isaaclab.scene.interactive_scene] Varying assets might have been spawned under different environments. However, the replicate physics flag is enabled in the 'InteractiveScene' configuration. This may adversely affect PhysX parsing. We recommend disabling this property.
+[INFO]: Time taken for scene creation : 2.081688 seconds
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 1
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : []
+	Replicate physics     : True
+[INFO]: Starting the simulation. This may take a few seconds. Please wait...
+Traceback (most recent call last):
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/manager_base.py", line 387, in _process_term_cfg_at_play
+    value.resolve(self._env.scene)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/scene_entity_cfg.py", line 131, in resolve
+    raise ValueError(f"The scene entity '{self.name}' does not exist. Available entities: {scene.keys()}.")
+ValueError: The scene entity 'object.*' does not exist. Available entities: ['terrain', 'robot', 'object', 'object_2', 'ee_frame', 'table', 'plane', 'light', 'basket'].
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/manager_base.py", line 389, in _process_term_cfg_at_play
+    raise ValueError(f"Error while parsing '{term_name}:{key}'. {e}")
+ValueError: Error while parsing 'reset_object_position:asset_cfg'. The scene entity 'object.*' does not exist. Available entities: ['terrain', 'robot', 'object', 'object_2', 'ee_frame', 'table', 'plane', 'light', 'basket'].
+2025-11-30 15:04:52 [16,339ms] [Error] [omni.hydra] [UsdToMdl] Prim '/World/envs/env_0/Table/Looks/Louisa_Coffee_Table_LTV3/Louisa_Coffee_Table_LTV3' parameter 'normalmap_texture': References an asset that can not be found: './textures/louisa-coffee-table-wood-bump.jpg'
+2025-11-30 15:04:52 [16,344ms] [Error] [omni.hydra] [UsdToMdl] Prim '/World/envs/env_0/Table/Looks/Louisa_Coffee_Table_LTV3/Louisa_Coffee_Table_LTV3' parameter 'normalmap_texture': References an asset that can not be found: './textures/louisa-coffee-table-wood-bump.jpg'
+2025-11-30 15:04:53 [17,106ms] [Warning] [omni.hydra.scene_delegate.plugin] Calling getBypassRenderSkelMeshProcessing for prim /World/envs/env_0/Robot/panda_rightfinger/visuals.proto_panda_rightfinger_id0 that has not been populated
+2025-11-30 15:04:53 [17,299ms] [Error] [omni.hydra] [UsdToMdl] Prim '/World/envs/env_0/Table/Looks/Louisa_Coffee_Table_LTV3/Louisa_Coffee_Table_LTV3' parameter 'normalmap_texture': References an asset that can not be found: './textures/louisa-coffee-table-wood-bump.jpg'
+2025-11-30 15:04:53 [17,300ms] [Error] [omni.hydra] [UsdToMdl] Prim '/World/envs/env_0/Table/Looks/Louisa_Coffee_Table_LTV3/Louisa_Coffee_Table_LTV3' parameter 'normalmap_texture': References an asset that can not be found: './textures/louisa-coffee-table-wood-bump.jpg'
+[INFO]: Time taken for simulation start : 3.290882 seconds
 [INFO] Command Manager:  <CommandManager> contains 1 active terms.
 +------------------------------------------+
 |           Active Command Terms           |
@@ -36,29 +89,78 @@ INFO]: Time taken for simulation start : 3.198994 seconds
 |   1   | gripper_action |         1 |
 +-------+----------------+-----------+
 
+[INFO] Observation Manager: <ObservationManager> contains 1 groups.
++-----------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (38,)) |
++----------+-------------------------------------+----------+
+|  Index   | Name                                |  Shape   |
++----------+-------------------------------------+----------+
+|    0     | joint_pos                           |   (9,)   |
+|    1     | joint_vel                           |   (9,)   |
+|    2     | object_position                     |   (3,)   |
+|    3     | target_object_position              |   (7,)   |
+|    4     | actions                             |   (7,)   |
+|    5     | object_2_position                   |   (3,)   |
++----------+-------------------------------------+----------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 1 active terms.
++------------------------------------+
+|      Active Termination Terms      |
++-------+-----------------+----------+
+| Index | Name            | Time Out |
++-------+-----------------+----------+
+|   0   | object_dropping |  False   |
++-------+-----------------+----------+
+
+[INFO] Reward Manager:  <RewardManager> contains 6 active terms.
++-----------------------------------------------------+
+|                 Active Reward Terms                 |
++-------+-----------------------------------+---------+
+| Index | Name                              |  Weight |
++-------+-----------------------------------+---------+
+|   0   | reaching_object                   |     1.0 |
+|   1   | lifting_object                    |    15.0 |
+|   2   | object_goal_tracking              |    16.0 |
+|   3   | object_goal_tracking_fine_grained |     5.0 |
+|   4   | action_rate                       | -0.0001 |
+|   5   | joint_vel                         | -0.0001 |
++-------+-----------------------------------+---------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 2 active terms.
++--------------------------+
+| Active Curriculum Terms  |
++---------+----------------+
+|  Index  | Name           |
++---------+----------------+
+|    0    | action_rate    |
+|    1    | joint_vel      |
++---------+----------------+
+
+Creating window for environment.
+[INFO]: Completed setting up the environment...
+Keyboard Controller for SE(3): Se3Keyboard
+	Keyboard name: Isaac Sim 4.5.0
+	----------------------------------------------
+	Toggle gripper (open/close): K
+	Move arm along x-axis: W/S
+	Move arm along y-axis: A/D
+	Move arm along z-axis: Q/E
+	Rotate arm along x-axis: Z/X
+	Rotate arm along y-axis: T/G
+	Rotate arm along z-axis: C/V
 Traceback (most recent call last):
   File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 155, in <module>
     main()
-  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 85, in main
-    env = gym.make(args_cli.task, cfg=env_cfg).unwrapped
-  File "/home/user/isaacsim/exts/omni.isaac.ml_archive/pip_prebundle/gymnasium/envs/registration.py", line 802, in make
-    env = env_creator(**env_spec_kwargs)
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 79, in __init__
-    super().__init__(cfg=cfg)
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_env.py", line 163, in __init__
-    self.load_managers()
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 117, in load_managers
-    super().load_managers()
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_env.py", line 243, in load_managers
-    self.observation_manager = ObservationManager(self.cfg.observations, self)
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/observation_manager.py", line 82, in __init__
-    super().__init__(cfg, env)
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/manager_base.py", line 169, in __init__
-    self._prepare_terms()
-  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/observation_manager.py", line 465, in _prepare_terms
-    obs_dims = tuple(term_cfg.func(self._env, **term_cfg.params).shape)
-  File "/home/user/IsaacLab/source/isaaclab_tasks/isaaclab_tasks/manager_based/manipulation/lift/mdp/observations.py", line 26, in object_position_in_robot_root_frame
-    object: RigidObject = env.scene[object_cfg.name]
+  File "/home/user/Downloads/FCloud OmniBot赛事指定文件/table_clean/table_clean_project/table_clean/scripts/run_official_teleop.py", line 128, in main
+    env.reset()
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_env.py", line 295, in reset
+    self._reset_idx(env_ids)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/manager_based_rl_env.py", line 360, in _reset_idx
+    self.event_manager.apply(mode="reset", env_ids=env_ids, global_env_step_count=env_step_count)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/managers/event_manager.py", line 244, in apply
+    term_cfg.func(self._env, env_ids, **term_cfg.params)
+  File "/home/user/IsaacLab/source/isaaclab/isaaclab/envs/mdp/events.py", line 844, in reset_root_state_uniform
+    asset: RigidObject | Articulation = env.scene[asset_cfg.name]
   File "/home/user/IsaacLab/source/isaaclab/isaaclab/scene/interactive_scene.py", line 618, in __getitem__
     raise KeyError(f"Scene entity with key '{key}' not found. Available Entities: '{all_keys}'")
-KeyError: "Scene entity with key 'object' not found. Available Entities: '['terrain', 'robot', 'object_a', 'object_b', 'ee_frame', 'table', 'plane', 'light', 'basket']'"
+KeyError: "Scene entity with key 'object.*' not found. Available Entities: '['terrain', 'robot', 'object', 'object_2', 'ee_frame', 'table', 'plane', 'light', 'basket']'"
