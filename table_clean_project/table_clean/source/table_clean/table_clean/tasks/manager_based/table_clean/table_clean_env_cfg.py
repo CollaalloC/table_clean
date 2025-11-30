@@ -53,46 +53,47 @@ ROBOT_EE_OFFSET_ORIGINAL = 0.1034
 @configclass
 class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
     """
-    继承官方的 Franka IK 环境配置。
-    我们直接获得了：
-    1. Franka High PD 机器人配置
-    2. IK Relative 动作空间 (适配 Teleop)
-    3. 末端传感器配置 (EE Frame)
+    自定义环境配置：Table Clean (IK Control)
     """
     def __post_init__(self):
-        # 1. 运行父类初始化 (加载了官方的 Robot, Actions, Sensors)
+        # 1. 运行父类初始化
         super().__post_init__()
 
         # =====================================================
-        # 2. 修改机器人配置 (位置 & 尺寸)
+        # 2. 机器人设置 (位置 & 尺寸 & 动力学修正)
         # =====================================================
         
-        # [A] 修改位置：移到 Y=-20 (远离篮子)，高度 45m
+        # [A] 位置：远离篮子
         self.scene.robot.init_state.pos = (0.0, -20.0, TABLE_HEIGHT)
         self.scene.robot.init_state.rot = (1.0, 0.0, 0.0, 0.0)
         
-        # [B] 修改尺寸：放大 150 倍
-        # 注意：spawn 是一个 UsdFileCfg 对象，我们可以直接修改它的 scale 属性
+        # [B] 尺寸：放大 150 倍
         self.scene.robot.spawn.scale = (SCENE_SCALE, SCENE_SCALE, SCENE_SCALE)
 
+        # [C] 动力学修正 (重要！)
+        # 放大150倍后，机器人太重了，默认电机推不动。
+        # 我们强制关闭重力，让它像在太空中一样，这样IK才能控制得动。
+        self.scene.robot.spawn.rigid_props.disable_gravity = True 
+
         # =====================================================
-        # 3. 修正 IK 控制器与传感器的偏移量 (适配放大)
+        # 3. 修正 IK 控制器与传感器 (适配放大)
         # =====================================================
-        # 因为机器人变大了 150 倍，"手掌"到"指尖"的距离也变大了 150 倍
-        # 0.1034m * 150 = 15.51m
         scaled_offset = ROBOT_EE_OFFSET_ORIGINAL * SCENE_SCALE
 
-        # [A] 修正 IK 动作空间的 Body Offset
+        # [A] 修正动作空间 (Actions)
         self.actions.arm_action.body_offset.pos = [0.0, 0.0, scaled_offset]
+        
+        # [关键修改] 放大动作灵敏度！
+        # 以前动一下是 0.5米，现在需要是 0.5 * 150 = 75米，否则看不出在动
+        self.actions.arm_action.scale = 0.5 * SCENE_SCALE
 
-        # [B] 修正末端传感器 (FrameTransformer) 的 Offset
-        # 这里的 target_frames[0] 就是 end_effector
+        # [B] 修正传感器
         self.scene.ee_frame.target_frames[0].offset.pos = [0.0, 0.0, scaled_offset]
 
         # =====================================================
-        # 4. 覆盖场景物体
+        # 4. 覆盖场景物体 (Table, Basket)
         # =====================================================
-        # [A] 覆盖 Table (官方默认是小桌子，我们换成大桌子)
+        
         self.scene.table = AssetBaseCfg(
             prim_path="{ENV_REGEX_NS}/Table",
             spawn=UsdFileCfg(
@@ -102,55 +103,6 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
             init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, 0.0)),
         )
 
-        # [C] 杂货 (初始定义)
-        # 注意：这里的 init_state 只是第一帧的位置，reset 后会被下面的 events 覆盖
-        self.scene.object = RigidObjectCfg(
-            prim_path="{ENV_REGEX_NS}/Object",
-            init_state=RigidObjectCfg.InitialStateCfg(
-                pos=[0.0, -10.0, TABLE_HEIGHT + 0.5], 
-                rot=[1, 0, 0, 0]
-            ),
-            spawn=MultiAssetSpawnerCfg(
-                assets_cfg=[
-                    UsdFileCfg(
-                        usd_path=f"{ASSETS_DIR}/{name}/{name}.usd",
-                        scale=(1.0, 1.0, 1.0),
-                        rigid_props=RigidBodyPropertiesCfg(
-                            disable_gravity=False, linear_damping=1.0, angular_damping=1.0
-                        ),
-                        mass_props=MassPropertiesCfg(mass=0.5), 
-                    ) for name in OBJECT_NAMES
-                ],
-                random_choice=True, # 每次重置随机换一个物品模型
-            ),
-        )
-
-        # =====================================================
-        # 4. [新增] 随机化事件 (Events)
-        # =====================================================
-        # 覆盖官方的 reset_object_position，使用我们自定义的范围
-        self.events.reset_object_position = EventTerm(
-            func=mdp.reset_root_state_uniform, # 使用均匀分布随机重置位置
-            mode="reset", # 仅在环境重置时触发
-            params={
-                "asset_cfg": SceneEntityCfg("object"),
-                "pose_range": {
-                    # X轴: 左右各5米范围
-                    "x": (-5.0, 5.0), 
-                    
-                    # Y轴: [-15, -2]
-                    # 解释: 机器人(-20) < 物品 < 篮子(8)
-                    # 这样物品就在机器人前方，且不会掉进篮子里
-                    "y": (-15.0, -2.0), 
-                    
-                    # Z轴: 在桌面上方 0.5~1.0米处生成，自然掉落
-                    "z": (TABLE_HEIGHT + 0.5, TABLE_HEIGHT + 1.0)
-                },
-                "velocity_range": {}, # 初速度为0
-            },
-        )
-
-        # [C] 新增 Basket (官方 Lift 任务没有篮子)
         self.scene.basket = AssetBaseCfg(
             prim_path="{ENV_REGEX_NS}/Basket",
             spawn=UsdFileCfg(
@@ -160,6 +112,60 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
             init_state=AssetBaseCfg.InitialStateCfg(
                 pos=(0.0, 8.0, TABLE_HEIGHT),
             ),
+        )
+
+        # =====================================================
+        # 5. 生成两个随机物品 (Object A & Object B)
+        # =====================================================
+        # 定义通用的生成器配置
+        common_spawner = MultiAssetSpawnerCfg(
+            assets_cfg=[
+                UsdFileCfg(
+                    usd_path=f"{ASSETS_DIR}/{name}/{name}.usd",
+                    scale=(1.0, 1.0, 1.0),
+                    rigid_props=RigidBodyPropertiesCfg(
+                        disable_gravity=False, linear_damping=1.0, angular_damping=1.0
+                    ),
+                    mass_props=MassPropertiesCfg(mass=0.5), 
+                ) for name in OBJECT_NAMES
+            ],
+            random_choice=True, # 随机选一个
+        )
+
+        # 物品 A
+        self.scene.object_a = RigidObjectCfg(
+            prim_path="{ENV_REGEX_NS}/Object_A",
+            init_state=RigidObjectCfg.InitialStateCfg(pos=[0.0, -10.0, TABLE_HEIGHT + 0.5]),
+            spawn=common_spawner, # 复用配置
+        )
+
+        # 物品 B
+        self.scene.object_b = RigidObjectCfg(
+            prim_path="{ENV_REGEX_NS}/Object_B",
+            init_state=RigidObjectCfg.InitialStateCfg(pos=[5.0, -10.0, TABLE_HEIGHT + 0.5]),
+            spawn=common_spawner, # 复用配置
+        )
+
+        # [重要] 移除原本的 self.scene.object，防止报错或混淆
+        if hasattr(self.scene, "object"):
+            del self.scene.object
+
+        # =====================================================
+        # 6. 随机化事件 (适配双物品)
+        # =====================================================
+        self.events.reset_object_position = EventTerm(
+            func=mdp.reset_root_state_uniform,
+            mode="reset",
+            params={
+                # 使用正则匹配 object_a 和 object_b
+                "asset_cfg": SceneEntityCfg("object_.*"), 
+                "pose_range": {
+                    "x": (-5.0, 5.0), 
+                    "y": (-15.0, -2.0),
+                    "z": (TABLE_HEIGHT + 0.5, TABLE_HEIGHT + 1.0)
+                },
+                "velocity_range": {},
+            },
         )
 
 ##
