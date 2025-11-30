@@ -134,14 +134,30 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
         )
 
         # =====================================================
-        # 5. 随机化事件
+        # 5. [修复] 随机化事件 (拆分为两个独立事件)
         # =====================================================
+        
+        # 随机化物体 1 (Object)
         self.events.reset_object_position = EventTerm(
             func=mdp.reset_root_state_uniform,
             mode="reset",
             params={
-                # 使用正则 "object.*" 同时控制 object 和 object_2
-                "asset_cfg": SceneEntityCfg("object.*"), 
+                "asset_cfg": SceneEntityCfg("object"),  # 明确指定 object
+                "pose_range": {
+                    "x": (-5.0, 5.0), 
+                    "y": (-15.0, -2.0),
+                    "z": (TABLE_HEIGHT + 0.5, TABLE_HEIGHT + 1.0)
+                },
+                "velocity_range": {},
+            },
+        )
+
+        # 随机化物体 2 (Object 2)
+        self.events.reset_object_2_position = EventTerm(
+            func=mdp.reset_root_state_uniform,
+            mode="reset",
+            params={
+                "asset_cfg": SceneEntityCfg("object_2"), # 明确指定 object_2
                 "pose_range": {
                     "x": (-5.0, 5.0), 
                     "y": (-15.0, -2.0),
@@ -154,8 +170,6 @@ class TableCleanIKRelEnvCfg(OfficialFrankaIKCfg):
         # =====================================================
         # 6. 补充观测
         # =====================================================
-        # 父类已经有了 object 的观测。
-        # 我们只需要额外把 object_2 的位置加进去即可。
         self.observations.policy.object_2_position = ObsTerm(
             func=mdp.object_position_in_robot_root_frame,
             params={"object_cfg": SceneEntityCfg("object_2")}
